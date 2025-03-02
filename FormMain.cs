@@ -1,4 +1,5 @@
 using Newtonsoft.Json;
+using RestSharp;
 using System.Diagnostics; 
 
 namespace MagicalAPIWand
@@ -9,6 +10,7 @@ namespace MagicalAPIWand
         private string url { get; set; }
         private int mode { get; set; }
         private string apidata { get; set; }
+        private Dictionary<string, string> formdata { get; set; }
         private string method { get; set; }
         private CancellationTokenSource _cts;
 
@@ -46,7 +48,7 @@ namespace MagicalAPIWand
 
 
         private void UpdateRichTextBox(int num, RichTextBox richTextBox, string text)
-        { 
+        {
             richTextBox.AppendText(text + Environment.NewLine);
             richTextBox.SelectionStart = richTextBox.TextLength;
             richTextBox.ScrollToCaret();
@@ -89,11 +91,13 @@ namespace MagicalAPIWand
             AddTask();
         }
 
-        private void AddTask()
+        private void AddTask(bool add = true, int? num = null)
         {
-
-            AppConfig.TaskNum++;
-            CreatTaskGroup(AppConfig.TaskNum);
+            if (add)
+            {
+                AppConfig.TaskNum++;
+            }
+            CreatTaskGroup(num ?? AppConfig.TaskNum);
         }
 
 
@@ -124,7 +128,7 @@ namespace MagicalAPIWand
             }
 
             // 等待所有任务完成 
-            await Task.WhenAll(tasks); 
+            await Task.WhenAll(tasks);
         }
 
         private async void ShowMsg(string message)
@@ -137,12 +141,6 @@ namespace MagicalAPIWand
 
         private async void button2_Click(object sender, EventArgs e)
         {
-            if (this.button_api_start.Text == "Stop")
-            {
-                _cts.Cancel();
-                this.button_api_start.Text = "Start";
-                return;
-            }
             if (comboBox_api_method.SelectedItem == null)
             {
                 ShowMsg("Select Method");
@@ -158,16 +156,44 @@ namespace MagicalAPIWand
                 ShowMsg("Input Url");
                 return;
             }
-            if (!radioButton_mode_json.Checked && !radioButton_mode_form.Checked)
-            {
-                ShowMsg("Check Mode");
-                return;
-            }
             this.address = textBox_api_address.Text.Trim();
             this.url = textBox_api_url.Text.Trim();
             this.method = comboBox_api_method.SelectedItem.ToString();
-            this.mode = radioButton_mode_json.Checked ? 1 : 2;
-            this.apidata = richTextBox_api_data.Text;
+            this.mode = tabControl_api.SelectedIndex + 1;
+            if (this.mode == 1)
+            {
+                this.apidata = richTextBox_api_data.Text;
+            }
+            else
+            {
+                var dic = new Dictionary<string, string>();
+                if (!string.IsNullOrWhiteSpace(this.textBox_api_fn1.Text) &&
+                    !string.IsNullOrWhiteSpace(this.textBox_api_fv1.Text))
+                {
+                    dic.Add(this.textBox_api_fn1.Text.Trim(), this.textBox_api_fv1.Text);
+                }
+                if (!string.IsNullOrWhiteSpace(this.textBox_api_fn2.Text) &&
+                   !string.IsNullOrWhiteSpace(this.textBox_api_fv2.Text))
+                {
+                    dic.Add(this.textBox_api_fn2.Text.Trim(), this.textBox_api_fv2.Text);
+                }
+                if (!string.IsNullOrWhiteSpace(this.textBox_api_fn3.Text) &&
+                   !string.IsNullOrWhiteSpace(this.textBox_api_fv3.Text))
+                {
+                    dic.Add(this.textBox_api_fn3.Text.Trim(), this.textBox_api_fv3.Text);
+                }
+                if (!string.IsNullOrWhiteSpace(this.textBox_api_fn4.Text) &&
+                   !string.IsNullOrWhiteSpace(this.textBox_api_fv4.Text))
+                {
+                    dic.Add(this.textBox_api_fn4.Text.Trim(), this.textBox_api_fv4.Text);
+                }
+                if (!string.IsNullOrWhiteSpace(this.textBox_api_fn5.Text) &&
+                   !string.IsNullOrWhiteSpace(this.textBox_api_fv5.Text))
+                {
+                    dic.Add(this.textBox_api_fn5.Text.Trim(), this.textBox_api_fv5.Text);
+                }
+                this.formdata = dic;
+            }
             foreach (GroupBox item in this.flowLayoutPanel_TaskContainer.Controls)
             {
                 item.Text = Clear(item.Text);
@@ -176,8 +202,23 @@ namespace MagicalAPIWand
                 richTextBox.Text = "";
             }
             _cts = new CancellationTokenSource();
+            if (ImportData.Data == null || ImportData.Data.Count < 1)
+            {
+                var box = this.flowLayoutPanel_TaskContainer.Controls[0] as GroupBox;
+                try
+                {
+                    UpdateRichTextBox(1, box, "http data:" + Environment.NewLine + (this.mode == 1 ? JsonConvert.SerializeObject(apidata) : formdata.ConvertDictionaryToText()));
+
+                    var res = await new HttpHelper().SendAsync(address, url, method, mode, apidata, formdata);
+                    UpdateRichTextBox(1, box, "http res:" + Environment.NewLine + "code:" + res.StatusCode + Environment.NewLine + "content:" + res.Content);
+                }
+                catch (Exception ex)
+                {
+                    UpdateRichTextBox(1, box, "http error:" + ex.Message);
+                }
+                return;
+            }
             await WorkAsync(ExecuteTaskAsync, _cts.Token);
-            this.button_api_start.Text = "Stop";
         }
 
         public string Clear(string val)
@@ -193,8 +234,8 @@ namespace MagicalAPIWand
             var text = groupBox.Text;
             try
             {
- 
-                        
+
+
                 if (groupBox.InvokeRequired)
                 {
                     groupBox.Invoke(new Action(() =>
@@ -209,7 +250,6 @@ namespace MagicalAPIWand
                     groupBox.ForeColor = Color.Blue;
                 }
 
-                // 模拟任务执行（在后台线程中运行）
                 try
                 {
                     var http = new HttpHelper();
@@ -217,14 +257,41 @@ namespace MagicalAPIWand
                     {
                         if (cancellationToken.IsCancellationRequested)
                         {
-                            UpdateRichTextBox(taskNumber, groupBox, "Tasl Cancel");
+                            UpdateRichTextBox(taskNumber, groupBox, "Task Cancel");
+
+                            if (groupBox.InvokeRequired)
+                            {
+                                groupBox.Invoke(new Action(() =>
+                                {
+                                    groupBox.Text = text + "[Cancel]";
+                                    groupBox.ForeColor = Color.MediumBlue;
+                                }));
+                            }
+                            else
+                            {
+                                groupBox.Text += text + "[Cancel]";
+                                groupBox.ForeColor = Color.MediumBlue;
+                            }
+
                             return;
                         }
-                        UpdateRichTextBox(taskNumber, groupBox, "http data:" + JsonConvert.SerializeObject(data[i]));
                         try
                         {
-                            var res = await http.SendAsync(address, url, method, mode, apidata, data[i]);
-                            UpdateRichTextBox(taskNumber, groupBox, "http res:" + res.StatusCode + " content:" + res.Content);
+                            var capidata = "";
+                            RestResponse res = null;
+                            if (this.mode == 1)
+                            {
+                                UpdateRichTextBox(taskNumber, groupBox, capidata);
+                                capidata = HttpHelper.ConvertFormData(apidata, data[i]);
+                                res = await http.SendAsync(address, url, method, mode, capidata, null);
+                            }
+                            else if (this.mode == 2)
+                            {
+                                var cformdata = HttpHelper.ConvertFormData(data[i], formdata);
+                                UpdateRichTextBox(taskNumber, groupBox, cformdata.ConvertDictionaryToText());
+                                res = await http.SendAsync(address, url, method, mode, capidata, cformdata);
+                            }
+                            UpdateRichTextBox(taskNumber, groupBox, "http res:" + Environment.NewLine + "code:" + res?.StatusCode + Environment.NewLine + " content:" + res?.Content);
                         }
                         catch (Exception ex)
                         {
@@ -280,13 +347,13 @@ namespace MagicalAPIWand
                         groupBox.ForeColor = Color.Red;
                     }
                     UpdateRichTextBox(taskNumber, groupBox, "Task Work Err:" + ex.Message);
-                } 
+                }
             }
             catch (OperationCanceledException)
             {
                 UpdateRichTextBox(taskNumber, groupBox, "Task Work Cancel");
-            } 
-        } 
+            }
+        }
 
         private void SaveLogToFile(int num, string logContent)
         {
@@ -322,7 +389,7 @@ namespace MagicalAPIWand
         private void FormMain_Load(object sender, EventArgs e)
         {
             this.label_msg.Text = "";
-            this.comboBox_api_method.SelectedIndex = 0;
+            this.comboBox_api_method.SelectedIndex = 0; 
             AddTask();
         }
 
@@ -353,6 +420,68 @@ namespace MagicalAPIWand
             {
                 MessageBox.Show($"Open Directory Error：{ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void button2_Click_1(object sender, EventArgs e)
+        {
+            _cts.Cancel();
+        }
+
+        private void configToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FormSetting form = new FormSetting();
+            var res = form.ShowDialog();
+            if (res == DialogResult.OK)
+            {
+                if (this.flowLayoutPanel_TaskContainer.Controls.Count < AppConfig.TaskNum)
+                {
+                    var num = AppConfig.TaskNum - this.flowLayoutPanel_TaskContainer.Controls.Count;
+                    for (var i = 0; i < num; i++)
+                    {
+                        AddTask(false, this.flowLayoutPanel_TaskContainer.Controls.Count + 1);
+                    }
+                }
+                else if (this.flowLayoutPanel_TaskContainer.Controls.Count > AppConfig.TaskNum)
+                {
+                    var num = this.flowLayoutPanel_TaskContainer.Controls.Count - AppConfig.TaskNum;
+                    for (var i = 0; i < num; i++)
+                    {
+                        this.flowLayoutPanel_TaskContainer.Controls.Remove(this.flowLayoutPanel_TaskContainer.Controls[this.flowLayoutPanel_TaskContainer.Controls.Count - 1]);
+                    }
+                }
+            }
+        }
+
+        private void button3_Click_1(object sender, EventArgs e)
+        {
+            Init();
+        }
+
+        private void Init()
+        {
+            this.richTextBox_api_data.Text = "";
+            this.textBox_api_address.Text = "";
+            this.textBox_api_url.Text = "";
+            this.textBox_api_fn1.Text = "";
+            this.textBox_api_fn2.Text = "";
+            this.textBox_api_fn3.Text = "";
+            this.textBox_api_fn4.Text = "";
+            this.textBox_api_fn5.Text = "";
+            this.textBox_api_fv1.Text = "";
+            this.textBox_api_fv2.Text = "";
+            this.textBox_api_fv3.Text = "";
+            this.textBox_api_fv4.Text = "";
+            this.textBox_api_fv5.Text = "";
+            foreach (GroupBox item in this.flowLayoutPanel_TaskContainer.Controls)
+            {
+                (item.Controls[0] as RichTextBox).Text = "";
+            }
+        }
+
+        private void ownerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FormAbout form = new FormAbout();
+            form.ShowDialog();
         }
     }
 }

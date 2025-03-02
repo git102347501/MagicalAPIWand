@@ -35,6 +35,22 @@
             ownerToolStripMenuItem = new ToolStripMenuItem();
             splitContainer1 = new SplitContainer();
             groupBox1 = new GroupBox();
+            button3 = new Button();
+            button2 = new Button();
+            tabControl_api = new TabControl();
+            tabPage1 = new TabPage();
+            richTextBox_api_data = new RichTextBox();
+            tabPage2 = new TabPage();
+            textBox_api_fn5 = new TextBox();
+            textBox_api_fn3 = new TextBox();
+            textBox_api_fn4 = new TextBox();
+            textBox_api_fn2 = new TextBox();
+            textBox_api_fn1 = new TextBox();
+            textBox_api_fv5 = new TextBox();
+            textBox_api_fv4 = new TextBox();
+            textBox_api_fv3 = new TextBox();
+            textBox_api_fv2 = new TextBox();
+            textBox_api_fv1 = new TextBox();
             textBox_api_url = new TextBox();
             label_msg = new Label();
             comboBox_api_method = new ComboBox();
@@ -43,9 +59,6 @@
             label_data_count = new Label();
             button_api_data_impot = new Button();
             button_api_start = new Button();
-            richTextBox_api_data = new RichTextBox();
-            radioButton_mode_form = new RadioButton();
-            radioButton_mode_json = new RadioButton();
             button1 = new Button();
             label2 = new Label();
             textBox_api_address = new TextBox();
@@ -57,6 +70,9 @@
             splitContainer1.Panel2.SuspendLayout();
             splitContainer1.SuspendLayout();
             groupBox1.SuspendLayout();
+            tabControl_api.SuspendLayout();
+            tabPage1.SuspendLayout();
+            tabPage2.SuspendLayout();
             SuspendLayout();
             // 
             // menuStrip1
@@ -81,6 +97,7 @@
             configToolStripMenuItem.Name = "configToolStripMenuItem";
             configToolStripMenuItem.Size = new Size(167, 34);
             configToolStripMenuItem.Text = "Config";
+            configToolStripMenuItem.Click += configToolStripMenuItem_Click;
             // 
             // aboutToolStripMenuItem
             // 
@@ -92,8 +109,9 @@
             // ownerToolStripMenuItem
             // 
             ownerToolStripMenuItem.Name = "ownerToolStripMenuItem";
-            ownerToolStripMenuItem.Size = new Size(167, 34);
+            ownerToolStripMenuItem.Size = new Size(270, 34);
             ownerToolStripMenuItem.Text = "Owner";
+            ownerToolStripMenuItem.Click += ownerToolStripMenuItem_Click;
             // 
             // splitContainer1
             // 
@@ -110,11 +128,14 @@
             // 
             splitContainer1.Panel2.Controls.Add(flowLayoutPanel_TaskContainer);
             splitContainer1.Size = new Size(1686, 938);
-            splitContainer1.SplitterDistance = 270;
+            splitContainer1.SplitterDistance = 297;
             splitContainer1.TabIndex = 3;
             // 
             // groupBox1
             // 
+            groupBox1.Controls.Add(button3);
+            groupBox1.Controls.Add(button2);
+            groupBox1.Controls.Add(tabControl_api);
             groupBox1.Controls.Add(textBox_api_url);
             groupBox1.Controls.Add(label_msg);
             groupBox1.Controls.Add(comboBox_api_method);
@@ -123,9 +144,6 @@
             groupBox1.Controls.Add(label_data_count);
             groupBox1.Controls.Add(button_api_data_impot);
             groupBox1.Controls.Add(button_api_start);
-            groupBox1.Controls.Add(richTextBox_api_data);
-            groupBox1.Controls.Add(radioButton_mode_form);
-            groupBox1.Controls.Add(radioButton_mode_json);
             groupBox1.Controls.Add(button1);
             groupBox1.Controls.Add(label2);
             groupBox1.Controls.Add(textBox_api_address);
@@ -133,10 +151,160 @@
             groupBox1.Dock = DockStyle.Fill;
             groupBox1.Location = new Point(0, 0);
             groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(1686, 270);
+            groupBox1.Size = new Size(1686, 297);
             groupBox1.TabIndex = 1;
             groupBox1.TabStop = false;
             groupBox1.Text = "Api Info";
+            // 
+            // button3
+            // 
+            button3.Location = new Point(1230, 257);
+            button3.Name = "button3";
+            button3.Size = new Size(112, 34);
+            button3.TabIndex = 18;
+            button3.Text = "Clear";
+            button3.UseVisualStyleBackColor = true;
+            button3.Click += button3_Click_1;
+            // 
+            // button2
+            // 
+            button2.Location = new Point(1348, 257);
+            button2.Name = "button2";
+            button2.Size = new Size(112, 34);
+            button2.TabIndex = 17;
+            button2.Text = "Stop";
+            button2.UseVisualStyleBackColor = true;
+            button2.Click += button2_Click_1;
+            // 
+            // tabControl_api
+            // 
+            tabControl_api.Controls.Add(tabPage1);
+            tabControl_api.Controls.Add(tabPage2);
+            tabControl_api.Location = new Point(130, 77);
+            tabControl_api.Multiline = true;
+            tabControl_api.Name = "tabControl_api";
+            tabControl_api.SelectedIndex = 0;
+            tabControl_api.Size = new Size(1544, 174);
+            tabControl_api.TabIndex = 16;
+            // 
+            // tabPage1
+            // 
+            tabPage1.Controls.Add(richTextBox_api_data);
+            tabPage1.Location = new Point(4, 33);
+            tabPage1.Name = "tabPage1";
+            tabPage1.Padding = new Padding(3);
+            tabPage1.Size = new Size(1536, 137);
+            tabPage1.TabIndex = 0;
+            tabPage1.Text = "JSON";
+            tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // richTextBox_api_data
+            // 
+            richTextBox_api_data.BorderStyle = BorderStyle.FixedSingle;
+            richTextBox_api_data.Dock = DockStyle.Fill;
+            richTextBox_api_data.Location = new Point(3, 3);
+            richTextBox_api_data.Name = "richTextBox_api_data";
+            richTextBox_api_data.Size = new Size(1530, 131);
+            richTextBox_api_data.TabIndex = 9;
+            richTextBox_api_data.Text = "{\n  \"soid\": \"{{soid}}\",\n  \"createtime\":\"{{createtime}}\",\n  \"usersysno\": {{usersysno}},\n  \"username\":\"{{username}}\"\n}";
+            // 
+            // tabPage2
+            // 
+            tabPage2.Controls.Add(textBox_api_fn5);
+            tabPage2.Controls.Add(textBox_api_fn3);
+            tabPage2.Controls.Add(textBox_api_fn4);
+            tabPage2.Controls.Add(textBox_api_fn2);
+            tabPage2.Controls.Add(textBox_api_fn1);
+            tabPage2.Controls.Add(textBox_api_fv5);
+            tabPage2.Controls.Add(textBox_api_fv4);
+            tabPage2.Controls.Add(textBox_api_fv3);
+            tabPage2.Controls.Add(textBox_api_fv2);
+            tabPage2.Controls.Add(textBox_api_fv1);
+            tabPage2.Location = new Point(4, 33);
+            tabPage2.Name = "tabPage2";
+            tabPage2.Padding = new Padding(3);
+            tabPage2.Size = new Size(1536, 137);
+            tabPage2.TabIndex = 1;
+            tabPage2.Text = "FormData";
+            tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // textBox_api_fn5
+            // 
+            textBox_api_fn5.Location = new Point(734, 98);
+            textBox_api_fn5.Name = "textBox_api_fn5";
+            textBox_api_fn5.Size = new Size(153, 30);
+            textBox_api_fn5.TabIndex = 16;
+            // 
+            // textBox_api_fn3
+            // 
+            textBox_api_fn3.Location = new Point(734, 56);
+            textBox_api_fn3.Name = "textBox_api_fn3";
+            textBox_api_fn3.Size = new Size(153, 30);
+            textBox_api_fn3.TabIndex = 15;
+            textBox_api_fn3.Text = "usersysno";
+            // 
+            // textBox_api_fn4
+            // 
+            textBox_api_fn4.Location = new Point(6, 101);
+            textBox_api_fn4.Name = "textBox_api_fn4";
+            textBox_api_fn4.Size = new Size(153, 30);
+            textBox_api_fn4.TabIndex = 14;
+            textBox_api_fn4.Text = "username";
+            // 
+            // textBox_api_fn2
+            // 
+            textBox_api_fn2.Location = new Point(6, 59);
+            textBox_api_fn2.Name = "textBox_api_fn2";
+            textBox_api_fn2.Size = new Size(153, 30);
+            textBox_api_fn2.TabIndex = 13;
+            textBox_api_fn2.Text = "createtime";
+            // 
+            // textBox_api_fn1
+            // 
+            textBox_api_fn1.Location = new Point(6, 15);
+            textBox_api_fn1.Name = "textBox_api_fn1";
+            textBox_api_fn1.Size = new Size(153, 30);
+            textBox_api_fn1.TabIndex = 12;
+            textBox_api_fn1.Text = "soid";
+            // 
+            // textBox_api_fv5
+            // 
+            textBox_api_fv5.Location = new Point(893, 98);
+            textBox_api_fv5.Name = "textBox_api_fv5";
+            textBox_api_fv5.Size = new Size(623, 30);
+            textBox_api_fv5.TabIndex = 11;
+            // 
+            // textBox_api_fv4
+            // 
+            textBox_api_fv4.Location = new Point(165, 101);
+            textBox_api_fv4.Name = "textBox_api_fv4";
+            textBox_api_fv4.Size = new Size(543, 30);
+            textBox_api_fv4.TabIndex = 9;
+            textBox_api_fv4.Text = "asdasdasd";
+            // 
+            // textBox_api_fv3
+            // 
+            textBox_api_fv3.Location = new Point(893, 56);
+            textBox_api_fv3.Name = "textBox_api_fv3";
+            textBox_api_fv3.Size = new Size(623, 30);
+            textBox_api_fv3.TabIndex = 7;
+            textBox_api_fv3.Text = "232323";
+            // 
+            // textBox_api_fv2
+            // 
+            textBox_api_fv2.Location = new Point(165, 56);
+            textBox_api_fv2.Name = "textBox_api_fv2";
+            textBox_api_fv2.Size = new Size(543, 30);
+            textBox_api_fv2.TabIndex = 5;
+            textBox_api_fv2.Text = "2025-02-03";
+            // 
+            // textBox_api_fv1
+            // 
+            textBox_api_fv1.Location = new Point(165, 15);
+            textBox_api_fv1.Name = "textBox_api_fv1";
+            textBox_api_fv1.Size = new Size(1351, 30);
+            textBox_api_fv1.TabIndex = 1;
+            textBox_api_fv1.Text = "{{soid}}";
             // 
             // textBox_api_url
             // 
@@ -167,7 +335,7 @@
             // 
             // button4
             // 
-            button4.Location = new Point(1372, 224);
+            button4.Location = new Point(1466, 257);
             button4.Name = "button4";
             button4.Size = new Size(104, 34);
             button4.TabIndex = 5;
@@ -178,7 +346,7 @@
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new Point(130, 229);
+            label3.Location = new Point(126, 262);
             label3.Name = "label3";
             label3.Size = new Size(333, 24);
             label3.TabIndex = 12;
@@ -213,40 +381,9 @@
             button_api_start.UseVisualStyleBackColor = true;
             button_api_start.Click += button2_Click;
             // 
-            // richTextBox_api_data
-            // 
-            richTextBox_api_data.BorderStyle = BorderStyle.FixedSingle;
-            richTextBox_api_data.Location = new Point(130, 79);
-            richTextBox_api_data.Name = "richTextBox_api_data";
-            richTextBox_api_data.Size = new Size(1446, 139);
-            richTextBox_api_data.TabIndex = 8;
-            richTextBox_api_data.Text = "{\n  \"soid\": \"{{soid}}\",\n  \"createtime\":\"{{createtime}}\",\n  \"usersysno\": {{usersysno}},\n  \"username\":\"{{username}}\"\n}";
-            // 
-            // radioButton_mode_form
-            // 
-            radioButton_mode_form.AutoSize = true;
-            radioButton_mode_form.Location = new Point(1591, 136);
-            radioButton_mode_form.Name = "radioButton_mode_form";
-            radioButton_mode_form.Size = new Size(76, 28);
-            radioButton_mode_form.TabIndex = 6;
-            radioButton_mode_form.Text = "form";
-            radioButton_mode_form.UseVisualStyleBackColor = true;
-            // 
-            // radioButton_mode_json
-            // 
-            radioButton_mode_json.AutoSize = true;
-            radioButton_mode_json.Checked = true;
-            radioButton_mode_json.Location = new Point(1591, 102);
-            radioButton_mode_json.Name = "radioButton_mode_json";
-            radioButton_mode_json.Size = new Size(72, 28);
-            radioButton_mode_json.TabIndex = 5;
-            radioButton_mode_json.TabStop = true;
-            radioButton_mode_json.Text = "Json";
-            radioButton_mode_json.UseVisualStyleBackColor = true;
-            // 
             // button1
             // 
-            button1.Location = new Point(1482, 224);
+            button1.Location = new Point(1576, 257);
             button1.Name = "button1";
             button1.Size = new Size(94, 34);
             button1.TabIndex = 4;
@@ -286,7 +423,7 @@
             flowLayoutPanel_TaskContainer.Dock = DockStyle.Fill;
             flowLayoutPanel_TaskContainer.Location = new Point(0, 0);
             flowLayoutPanel_TaskContainer.Name = "flowLayoutPanel_TaskContainer";
-            flowLayoutPanel_TaskContainer.Size = new Size(1686, 664);
+            flowLayoutPanel_TaskContainer.Size = new Size(1686, 637);
             flowLayoutPanel_TaskContainer.TabIndex = 0;
             // 
             // FormMain
@@ -309,6 +446,10 @@
             splitContainer1.ResumeLayout(false);
             groupBox1.ResumeLayout(false);
             groupBox1.PerformLayout();
+            tabControl_api.ResumeLayout(false);
+            tabPage1.ResumeLayout(false);
+            tabPage2.ResumeLayout(false);
+            tabPage2.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -321,9 +462,6 @@
         private ToolStripMenuItem ownerToolStripMenuItem;
         private SplitContainer splitContainer1;
         private GroupBox groupBox1;
-        private RichTextBox richTextBox_api_data;
-        private RadioButton radioButton_mode_form;
-        private RadioButton radioButton_mode_json;
         private Button button1;
         private Label label2;
         private TextBox textBox_api_address;
@@ -337,5 +475,24 @@
         private ComboBox comboBox_api_method;
         private Label label_msg;
         private TextBox textBox_api_url;
+        private TabControl tabControl_api;
+        private TabPage tabPage1;
+        private RichTextBox richTextBox_api_data;
+        private TabPage tabPage2;
+        private TextBox textBox_api_fn5;
+        private TextBox textBox_api_fn3;
+        private TextBox textBox_api_fn4;
+        private TextBox textBox_api_fn2;
+        private TextBox textBox_api_fn1;
+        private TextBox textBox_api_fv5;
+        private TextBox textBox_api_fv4;
+        private TextBox textBox_api_fv3;
+        private TextBox textBox_api_fv2;
+        private TextBox textBox_api_fv1;
+        private TextBox textBox2;
+        private Label label5;
+        private Label label4;
+        private Button button2;
+        private Button button3;
     }
 }

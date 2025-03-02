@@ -14,25 +14,14 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 namespace MagicalAPIWand
 {
     public class HttpHelper
-    {
-        public async Task<RestResponse> SendAsync(string address, string url, string method, int mode, string input, object obj)
+    { 
+
+        public async Task<RestResponse> SendAsync(string address, string url, string method, int mode, string input, Dictionary<string, string> formdata)
         {
             try
             { 
                 var client = new RestClient(address);
-                string data;
-                try
-                {
-                    data = obj is IDictionary ? ReplaceTemplateWithDictionary(input, obj as IDictionary) : ReplaceTemplateWithObjectProperties(input, obj);
-                }
-                catch (Exception ex)
-                {
-                    throw new ArgumentException("Convert Data with Tpl Is Error :" + ex.Message);
-                }
-                if (string.IsNullOrWhiteSpace(data))
-                {
-                    throw new ArgumentException("Convert Data with Tpl Is Null");
-                }
+                string data = ""; 
                 // 创建请求
                 var request = new RestRequest(url, ConvertMethod(method));
                 // 根据 mode 设置请求体
@@ -41,9 +30,8 @@ namespace MagicalAPIWand
                     case 1:
                         request.AddParameter("application/json", data, ParameterType.RequestBody);
                         break;
-                    case 2:
-                        var formData = JsonConvert.DeserializeObject(data) ?? throw new ArgumentException("Convert FormData Is Null");
-                        AddObjectAsParameters(request, formData);
+                    case 2: 
+                        AddObjectAsDic(request, formdata);
                         request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
                         break;
                     default:
@@ -66,6 +54,33 @@ namespace MagicalAPIWand
             }
         }
 
+        public static Dictionary<string, string> ConvertFormData(object obj, Dictionary<string, string> formdata)
+        {
+            if (formdata != null && formdata.Count > 0)
+            {
+                var dic = new Dictionary<string, string>();
+                foreach (var item in formdata)
+                {
+                    dic.Add(item.Key, obj is IDictionary ? ReplaceTemplateWithDictionary(item.Value, obj as IDictionary) : ReplaceTemplateWithObjectProperties(item.Value, obj)); 
+                }
+
+                return dic;
+            }
+
+            return formdata;
+        }
+
+        public static string ConvertFormData(string input, object obj)
+        {
+            if (obj != null && !string.IsNullOrWhiteSpace(input))
+            {
+                return obj is IDictionary ? ReplaceTemplateWithDictionary(input, obj as IDictionary) : ReplaceTemplateWithObjectProperties(input, obj);
+            }
+
+            return input;
+        }
+
+
         private void AddObjectAsParameters(RestRequest request, object obj)
         { 
             var properties = obj.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
@@ -75,6 +90,19 @@ namespace MagicalAPIWand
                 var key = property.Name;
                 var value = property.GetValue(obj);
                  
+                if (value != null)
+                {
+                    request.AddParameter(key, value.ToString());
+                }
+            }
+        }
+        private void AddObjectAsDic(RestRequest request, Dictionary<string, string> obj)
+        { 
+            foreach (var property in obj)
+            {
+                var key = property.Key;
+                var value = property.Value;
+
                 if (value != null)
                 {
                     request.AddParameter(key, value.ToString());
@@ -114,6 +142,10 @@ namespace MagicalAPIWand
 
         public static string ReplaceTemplateWithObjectProperties(string template, object obj)
         {
+            if (obj == null)
+            {
+                return template;
+            }
             // 使用正则表达式匹配 {{...}} 形式的占位符
             string pattern = @"\{\{(\w+)\}\}";
             return Regex.Replace(template, pattern, match =>
