@@ -35,19 +35,22 @@
             ownerToolStripMenuItem = new ToolStripMenuItem();
             splitContainer1 = new SplitContainer();
             groupBox1 = new GroupBox();
+            textBox_api_url = new TextBox();
+            label_msg = new Label();
+            comboBox_api_method = new ComboBox();
+            button4 = new Button();
             label3 = new Label();
             label_data_count = new Label();
-            button3 = new Button();
-            button2 = new Button();
-            richTextBox1 = new RichTextBox();
-            radioButton2 = new RadioButton();
-            radioButton1 = new RadioButton();
+            button_api_data_impot = new Button();
+            button_api_start = new Button();
+            richTextBox_api_data = new RichTextBox();
+            radioButton_mode_form = new RadioButton();
+            radioButton_mode_json = new RadioButton();
             button1 = new Button();
             label2 = new Label();
-            textBox1 = new TextBox();
+            textBox_api_address = new TextBox();
             label1 = new Label();
             flowLayoutPanel_TaskContainer = new FlowLayoutPanel();
-            button4 = new Button();
             menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
             splitContainer1.Panel1.SuspendLayout();
@@ -112,17 +115,20 @@
             // 
             // groupBox1
             // 
+            groupBox1.Controls.Add(textBox_api_url);
+            groupBox1.Controls.Add(label_msg);
+            groupBox1.Controls.Add(comboBox_api_method);
             groupBox1.Controls.Add(button4);
             groupBox1.Controls.Add(label3);
             groupBox1.Controls.Add(label_data_count);
-            groupBox1.Controls.Add(button3);
-            groupBox1.Controls.Add(button2);
-            groupBox1.Controls.Add(richTextBox1);
-            groupBox1.Controls.Add(radioButton2);
-            groupBox1.Controls.Add(radioButton1);
+            groupBox1.Controls.Add(button_api_data_impot);
+            groupBox1.Controls.Add(button_api_start);
+            groupBox1.Controls.Add(richTextBox_api_data);
+            groupBox1.Controls.Add(radioButton_mode_form);
+            groupBox1.Controls.Add(radioButton_mode_json);
             groupBox1.Controls.Add(button1);
             groupBox1.Controls.Add(label2);
-            groupBox1.Controls.Add(textBox1);
+            groupBox1.Controls.Add(textBox_api_address);
             groupBox1.Controls.Add(label1);
             groupBox1.Dock = DockStyle.Fill;
             groupBox1.Location = new Point(0, 0);
@@ -132,10 +138,47 @@
             groupBox1.TabStop = false;
             groupBox1.Text = "Api Info";
             // 
+            // textBox_api_url
+            // 
+            textBox_api_url.Location = new Point(608, 41);
+            textBox_api_url.Name = "textBox_api_url";
+            textBox_api_url.Size = new Size(578, 30);
+            textBox_api_url.TabIndex = 15;
+            textBox_api_url.Text = "/test/json";
+            // 
+            // label_msg
+            // 
+            label_msg.AutoSize = true;
+            label_msg.ForeColor = Color.Red;
+            label_msg.Location = new Point(1328, 47);
+            label_msg.Name = "label_msg";
+            label_msg.Size = new Size(48, 24);
+            label_msg.TabIndex = 14;
+            label_msg.Text = "Msg";
+            // 
+            // comboBox_api_method
+            // 
+            comboBox_api_method.FormattingEnabled = true;
+            comboBox_api_method.Items.AddRange(new object[] { "POST", "GET", "PUT", "DELETE" });
+            comboBox_api_method.Location = new Point(130, 39);
+            comboBox_api_method.Name = "comboBox_api_method";
+            comboBox_api_method.Size = new Size(141, 32);
+            comboBox_api_method.TabIndex = 13;
+            // 
+            // button4
+            // 
+            button4.Location = new Point(1372, 224);
+            button4.Name = "button4";
+            button4.Size = new Size(104, 34);
+            button4.TabIndex = 5;
+            button4.Text = "OpenLog";
+            button4.UseVisualStyleBackColor = true;
+            button4.Click += button4_Click;
+            // 
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new Point(161, 231);
+            label3.Location = new Point(130, 229);
             label3.Name = "label3";
             label3.Size = new Size(333, 24);
             label3.TabIndex = 12;
@@ -144,61 +187,62 @@
             // label_data_count
             // 
             label_data_count.AutoSize = true;
-            label_data_count.Location = new Point(52, 175);
+            label_data_count.Location = new Point(18, 175);
             label_data_count.Name = "label_data_count";
             label_data_count.Size = new Size(79, 24);
             label_data_count.TabIndex = 11;
             label_data_count.Text = "Data (0)";
             // 
-            // button3
+            // button_api_data_impot
             // 
-            button3.Location = new Point(41, 136);
-            button3.Name = "button3";
-            button3.Size = new Size(112, 34);
-            button3.TabIndex = 10;
-            button3.Text = "Import";
-            button3.UseVisualStyleBackColor = true;
-            button3.Click += button3_Click;
+            button_api_data_impot.Location = new Point(12, 136);
+            button_api_data_impot.Name = "button_api_data_impot";
+            button_api_data_impot.Size = new Size(90, 34);
+            button_api_data_impot.TabIndex = 10;
+            button_api_data_impot.Text = "Import";
+            button_api_data_impot.UseVisualStyleBackColor = true;
+            button_api_data_impot.Click += button3_Click;
             // 
-            // button2
+            // button_api_start
             // 
-            button2.Location = new Point(1060, 39);
-            button2.Name = "button2";
-            button2.Size = new Size(112, 34);
-            button2.TabIndex = 9;
-            button2.Text = "Start";
-            button2.UseVisualStyleBackColor = true;
-            button2.Click += button2_Click;
+            button_api_start.Location = new Point(1192, 41);
+            button_api_start.Name = "button_api_start";
+            button_api_start.Size = new Size(112, 34);
+            button_api_start.TabIndex = 9;
+            button_api_start.Text = "Start";
+            button_api_start.UseVisualStyleBackColor = true;
+            button_api_start.Click += button2_Click;
             // 
-            // richTextBox1
+            // richTextBox_api_data
             // 
-            richTextBox1.Location = new Point(159, 79);
-            richTextBox1.Name = "richTextBox1";
-            richTextBox1.Size = new Size(1417, 139);
-            richTextBox1.TabIndex = 8;
-            richTextBox1.Text = "";
+            richTextBox_api_data.BorderStyle = BorderStyle.FixedSingle;
+            richTextBox_api_data.Location = new Point(130, 79);
+            richTextBox_api_data.Name = "richTextBox_api_data";
+            richTextBox_api_data.Size = new Size(1446, 139);
+            richTextBox_api_data.TabIndex = 8;
+            richTextBox_api_data.Text = "{\n  \"soid\": \"{{soid}}\",\n  \"createtime\":\"{{createtime}}\",\n  \"usersysno\": {{usersysno}},\n  \"username\":\"{{username}}\"\n}";
             // 
-            // radioButton2
+            // radioButton_mode_form
             // 
-            radioButton2.AutoSize = true;
-            radioButton2.Location = new Point(1591, 136);
-            radioButton2.Name = "radioButton2";
-            radioButton2.Size = new Size(76, 28);
-            radioButton2.TabIndex = 6;
-            radioButton2.TabStop = true;
-            radioButton2.Text = "form";
-            radioButton2.UseVisualStyleBackColor = true;
+            radioButton_mode_form.AutoSize = true;
+            radioButton_mode_form.Location = new Point(1591, 136);
+            radioButton_mode_form.Name = "radioButton_mode_form";
+            radioButton_mode_form.Size = new Size(76, 28);
+            radioButton_mode_form.TabIndex = 6;
+            radioButton_mode_form.Text = "form";
+            radioButton_mode_form.UseVisualStyleBackColor = true;
             // 
-            // radioButton1
+            // radioButton_mode_json
             // 
-            radioButton1.AutoSize = true;
-            radioButton1.Location = new Point(1591, 102);
-            radioButton1.Name = "radioButton1";
-            radioButton1.Size = new Size(72, 28);
-            radioButton1.TabIndex = 5;
-            radioButton1.TabStop = true;
-            radioButton1.Text = "Json";
-            radioButton1.UseVisualStyleBackColor = true;
+            radioButton_mode_json.AutoSize = true;
+            radioButton_mode_json.Checked = true;
+            radioButton_mode_json.Location = new Point(1591, 102);
+            radioButton_mode_json.Name = "radioButton_mode_json";
+            radioButton_mode_json.Size = new Size(72, 28);
+            radioButton_mode_json.TabIndex = 5;
+            radioButton_mode_json.TabStop = true;
+            radioButton_mode_json.Text = "Json";
+            radioButton_mode_json.UseVisualStyleBackColor = true;
             // 
             // button1
             // 
@@ -213,23 +257,24 @@
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(43, 93);
+            label2.Location = new Point(14, 93);
             label2.Name = "label2";
             label2.Size = new Size(81, 24);
             label2.TabIndex = 2;
             label2.Text = "ApiData";
             // 
-            // textBox1
+            // textBox_api_address
             // 
-            textBox1.Location = new Point(159, 39);
-            textBox1.Name = "textBox1";
-            textBox1.Size = new Size(884, 30);
-            textBox1.TabIndex = 1;
+            textBox_api_address.Location = new Point(277, 41);
+            textBox_api_address.Name = "textBox_api_address";
+            textBox_api_address.Size = new Size(325, 30);
+            textBox_api_address.TabIndex = 1;
+            textBox_api_address.Text = "http://localhost:5034";
             // 
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(43, 42);
+            label1.Location = new Point(14, 42);
             label1.Name = "label1";
             label1.Size = new Size(110, 24);
             label1.TabIndex = 0;
@@ -243,16 +288,6 @@
             flowLayoutPanel_TaskContainer.Name = "flowLayoutPanel_TaskContainer";
             flowLayoutPanel_TaskContainer.Size = new Size(1686, 664);
             flowLayoutPanel_TaskContainer.TabIndex = 0;
-            // 
-            // button4
-            // 
-            button4.Location = new Point(1372, 224);
-            button4.Name = "button4";
-            button4.Size = new Size(104, 34);
-            button4.TabIndex = 5;
-            button4.Text = "OpenLog";
-            button4.UseVisualStyleBackColor = true;
-            button4.Click += button4_Click;
             // 
             // FormMain
             // 
@@ -286,18 +321,21 @@
         private ToolStripMenuItem ownerToolStripMenuItem;
         private SplitContainer splitContainer1;
         private GroupBox groupBox1;
-        private RichTextBox richTextBox1;
-        private RadioButton radioButton2;
-        private RadioButton radioButton1;
+        private RichTextBox richTextBox_api_data;
+        private RadioButton radioButton_mode_form;
+        private RadioButton radioButton_mode_json;
         private Button button1;
         private Label label2;
-        private TextBox textBox1;
+        private TextBox textBox_api_address;
         private Label label1;
         private FlowLayoutPanel flowLayoutPanel_TaskContainer;
-        private Button button2;
-        private Button button3;
+        private Button button_api_start;
+        private Button button_api_data_impot;
         private Label label_data_count;
         private Label label3;
         private Button button4;
+        private ComboBox comboBox_api_method;
+        private Label label_msg;
+        private TextBox textBox_api_url;
     }
 }

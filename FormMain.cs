@@ -1,11 +1,16 @@
 using Newtonsoft.Json;
-using System.Diagnostics;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Diagnostics; 
 
 namespace MagicalAPIWand
 {
     public partial class FormMain : Form
     {
+        private string address { get; set; }
+        private string url { get; set; }
+        private int mode { get; set; }
+        private string apidata { get; set; }
+        private string method { get; set; }
+        private CancellationTokenSource _cts;
 
         public FormMain()
         {
@@ -40,28 +45,19 @@ namespace MagicalAPIWand
         }
 
 
-        private void UpdateRichTextBox(int num, RichTextBox groupBox, string text)
-        {
-            RichTextBox richTextBox = (RichTextBox)groupBox.Controls[0];
-            // 如果当前线程不是UI线程，则通过Invoke委托给UI线程
-            if (richTextBox.InvokeRequired)
-            {
-                richTextBox.Invoke(new InsertTextDelegate(UpdateRichTextBox), num, richTextBox, text);
-            }
-            else
-            {
-                richTextBox.AppendText(text + Environment.NewLine);
-                richTextBox.SelectionStart = richTextBox.TextLength;
-                richTextBox.ScrollToCaret();
+        private void UpdateRichTextBox(int num, RichTextBox richTextBox, string text)
+        { 
+            richTextBox.AppendText(text + Environment.NewLine);
+            richTextBox.SelectionStart = richTextBox.TextLength;
+            richTextBox.ScrollToCaret();
 
-                //// 在UI线程中直接操作
-                //if (richTextBox.Text.Length > AppConfig.MaxTaskMsgLength)
-                //{
-                //    // 保存到日志文件
-                //    SaveLogToFile(num, richTextBox.Text);
-                //    // 清空文本框
-                //    richTextBox.Clear();
-                //}
+            // 在UI线程中直接操作
+            if (richTextBox.Text.Length > AppConfig.MaxTaskMsgLength)
+            {
+                // 保存到日志文件
+                SaveLogToFile(num, richTextBox.Text);
+                // 清空文本框
+                richTextBox.Clear();
             }
         }
 
@@ -103,7 +99,7 @@ namespace MagicalAPIWand
 
         public static string Id { get; set; }
 
-        public async Task WorkAsync(Action<int, List<object>> func)
+        public async Task WorkAsync(Action<int, List<object>, CancellationToken> func, CancellationToken cancellationToken)
         {
             if (AppConfig.TaskNum < 1)
             {
@@ -123,78 +119,174 @@ namespace MagicalAPIWand
                 int taskIndex = i; // 防止闭包问题
                 tasks.Add(Task.Run(() =>
                 {
-                    // 处理子列表中的数据
-                    func(taskIndex + 1, chunks[taskIndex]);
+                    func(taskIndex + 1, chunks[taskIndex], cancellationToken);
                 }));
             }
 
             // 等待所有任务完成 
-            await Task.WhenAll(tasks);
-            MessageBox.Show("Work Done");
+            await Task.WhenAll(tasks); 
+        }
+
+        private async void ShowMsg(string message)
+        {
+            this.label_msg.Text = message;
+            // 延迟3秒后清空标签文本
+            await Task.Delay(1000);
+            this.label_msg.Text = string.Empty;
         }
 
         private async void button2_Click(object sender, EventArgs e)
         {
-            await WorkAsync(ExecuteTaskAsync);
+            if (this.button_api_start.Text == "Stop")
+            {
+                _cts.Cancel();
+                this.button_api_start.Text = "Start";
+                return;
+            }
+            if (comboBox_api_method.SelectedItem == null)
+            {
+                ShowMsg("Select Method");
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(textBox_api_address.Text))
+            {
+                ShowMsg("Input Address");
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(textBox_api_url.Text))
+            {
+                ShowMsg("Input Url");
+                return;
+            }
+            if (!radioButton_mode_json.Checked && !radioButton_mode_form.Checked)
+            {
+                ShowMsg("Check Mode");
+                return;
+            }
+            this.address = textBox_api_address.Text.Trim();
+            this.url = textBox_api_url.Text.Trim();
+            this.method = comboBox_api_method.SelectedItem.ToString();
+            this.mode = radioButton_mode_json.Checked ? 1 : 2;
+            this.apidata = richTextBox_api_data.Text;
+            foreach (GroupBox item in this.flowLayoutPanel_TaskContainer.Controls)
+            {
+                item.Text = Clear(item.Text);
+                item.ForeColor = Color.Black;
+                RichTextBox richTextBox = (RichTextBox)item.Controls[0];
+                richTextBox.Text = "";
+            }
+            _cts = new CancellationTokenSource();
+            await WorkAsync(ExecuteTaskAsync, _cts.Token);
+            this.button_api_start.Text = "Stop";
         }
 
-        private void ExecuteTaskAsync(int taskNumber, List<object> data)
+        public string Clear(string val)
         {
-            // 获取对应的GroupBox
+            return val.Replace("[Working]", "").Replace("[Error]", "").Replace("[Done]", "");
+        }
+
+        private async void ExecuteTaskAsync(int taskNumber, List<object> data, CancellationToken cancellationToken)
+        {
+            // 获取对应的GroupBox 
             GroupBox groupBox = (GroupBox)this.flowLayoutPanel_TaskContainer.Controls[taskNumber - 1];
 
-            // 模拟任务执行（在后台线程中运行）
-            foreach (var item in data)
+            var text = groupBox.Text;
+            try
             {
-                // 模拟任务执行时间
-                Task.Delay(1000).Wait(); // 使用Task.Delay而不是Thread.Sleep
-
-                // 更新UI（切换到UI线程）
+ 
+                        
                 if (groupBox.InvokeRequired)
                 {
                     groupBox.Invoke(new Action(() =>
                     {
-                        UpdateRichTextBox(taskNumber, groupBox, JsonConvert.SerializeObject(item));
+                        groupBox.Text = text + "[Working]";
+                        groupBox.ForeColor = Color.Blue;
                     }));
                 }
                 else
                 {
-                    UpdateRichTextBox(taskNumber, groupBox, JsonConvert.SerializeObject(item));
+                    groupBox.Text += text + "[Working]";
+                    groupBox.ForeColor = Color.Blue;
                 }
-            }
 
-            // 任务完成（切换到UI线程）
-            if (groupBox.InvokeRequired)
-            {
-                groupBox.Invoke(new Action(() =>
+                // 模拟任务执行（在后台线程中运行）
+                try
                 {
-                    UpdateRichTextBox(taskNumber, groupBox, "任务完成");
-                }));
+                    var http = new HttpHelper();
+                    for (int i = 0; i < data.Count; i++)
+                    {
+                        if (cancellationToken.IsCancellationRequested)
+                        {
+                            UpdateRichTextBox(taskNumber, groupBox, "Tasl Cancel");
+                            return;
+                        }
+                        UpdateRichTextBox(taskNumber, groupBox, "http data:" + JsonConvert.SerializeObject(data[i]));
+                        try
+                        {
+                            var res = await http.SendAsync(address, url, method, mode, apidata, data[i]);
+                            UpdateRichTextBox(taskNumber, groupBox, "http res:" + res.StatusCode + " content:" + res.Content);
+                        }
+                        catch (Exception ex)
+                        {
+                            UpdateRichTextBox(taskNumber, groupBox, "http error:" + ex.Message);
+                        }
+
+                        // 更新UI（切换到UI线程）
+                        if (groupBox.InvokeRequired)
+                        {
+                            groupBox.Invoke(new Action(() =>
+                            {
+                                UpdateRichTextBox(taskNumber, groupBox, JsonConvert.SerializeObject(data[i]));
+                            }));
+                        }
+                        else
+                        {
+                            UpdateRichTextBox(taskNumber, groupBox, JsonConvert.SerializeObject(data[i]));
+                        }
+                    }
+
+                    // 任务完成（切换到UI线程）
+                    if (groupBox.InvokeRequired)
+                    {
+                        groupBox.Invoke(new Action(() =>
+                        {
+                            UpdateRichTextBox(taskNumber, groupBox, "Task Work Done");
+                            groupBox.ForeColor = Color.Green;
+                            groupBox.Text = text + "[Done]";
+                        }));
+                    }
+                    else
+                    {
+                        UpdateRichTextBox(taskNumber, groupBox, "Task Work Done");
+                        groupBox.ForeColor = Color.Green;
+                        groupBox.Text = text + "[Done]";
+                    }
+                }
+                catch (Exception ex)
+                {
+                    if (groupBox.InvokeRequired)
+                    {
+                        groupBox.Invoke(new Action(() =>
+                        {
+
+                            groupBox.Text = text + "[Error]";
+                            groupBox.ForeColor = Color.Red;
+                        }));
+                    }
+                    else
+                    {
+
+                        groupBox.Text = text + "[Error]";
+                        groupBox.ForeColor = Color.Red;
+                    }
+                    UpdateRichTextBox(taskNumber, groupBox, "Task Work Err:" + ex.Message);
+                } 
             }
-            else
+            catch (OperationCanceledException)
             {
-                UpdateRichTextBox(taskNumber, groupBox, "任务完成");
-            }
-        }
-
-        private void ExecuteTaskOnUIThread(int taskNumber, List<object> data, GroupBox groupBox)
-        {
-            // 获取RichTextBox
-            RichTextBox richTextBox = (RichTextBox)groupBox.Controls[0];
-
-            // 模拟任务执行
-            for (int i = 0; i < data.Count; i++)
-            {
-                richTextBox.AppendText($"Task {taskNumber} - 消费 {JsonConvert.SerializeObject(data[i])}{Environment.NewLine}");
-                richTextBox.SelectionStart = richTextBox.TextLength;
-                richTextBox.ScrollToCaret();
-
-                // 模拟任务执行时间
-                Thread.Sleep(1000); // 注意：这里使用Thread.Sleep而不是Task.Delay
-            }
-
-            richTextBox.AppendText($"Task {taskNumber} 消费完成{Environment.NewLine}");
-        }
+                UpdateRichTextBox(taskNumber, groupBox, "Task Work Cancel");
+            } 
+        } 
 
         private void SaveLogToFile(int num, string logContent)
         {
@@ -229,6 +321,8 @@ namespace MagicalAPIWand
 
         private void FormMain_Load(object sender, EventArgs e)
         {
+            this.label_msg.Text = "";
+            this.comboBox_api_method.SelectedIndex = 0;
             AddTask();
         }
 
