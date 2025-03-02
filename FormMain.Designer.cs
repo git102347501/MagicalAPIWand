@@ -35,6 +35,7 @@
             ownerToolStripMenuItem = new ToolStripMenuItem();
             splitContainer1 = new SplitContainer();
             groupBox1 = new GroupBox();
+            label3 = new Label();
             label_data_count = new Label();
             button3 = new Button();
             button2 = new Button();
@@ -46,7 +47,6 @@
             textBox1 = new TextBox();
             label1 = new Label();
             flowLayoutPanel_TaskContainer = new FlowLayoutPanel();
-            label3 = new Label();
             menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
             splitContainer1.Panel1.SuspendLayout();
@@ -129,6 +129,15 @@
             groupBox1.TabIndex = 1;
             groupBox1.TabStop = false;
             groupBox1.Text = "Api Info";
+            // 
+            // label3
+            // 
+            label3.AutoSize = true;
+            label3.Location = new Point(161, 231);
+            label3.Name = "label3";
+            label3.Size = new Size(333, 24);
+            label3.TabIndex = 12;
+            label3.Text = "Desc: Use Import Data {{datacolumn}}";
             // 
             // label_data_count
             // 
@@ -233,15 +242,6 @@
             flowLayoutPanel_TaskContainer.Size = new Size(1686, 664);
             flowLayoutPanel_TaskContainer.TabIndex = 0;
             // 
-            // label3
-            // 
-            label3.AutoSize = true;
-            label3.Location = new Point(161, 231);
-            label3.Name = "label3";
-            label3.Size = new Size(333, 24);
-            label3.TabIndex = 12;
-            label3.Text = "Desc: Use Import Data {{datacolumn}}";
-            // 
             // FormMain
             // 
             AutoScaleDimensions = new SizeF(11F, 24F);
@@ -253,6 +253,7 @@
             Name = "FormMain";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "MagicalAPIWand";
+            Load += FormMain_Load;
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
             splitContainer1.Panel1.ResumeLayout(false);

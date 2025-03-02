@@ -1,28 +1,40 @@
+using Newtonsoft.Json;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+
 namespace MagicalAPIWand
 {
     public partial class FormMain : Form
-    { 
-
+    {
+        
         public FormMain()
         {
             InitializeComponent();
-        } 
+        }
 
-        private delegate void InsertTextDelegate(RichTextBox richTextBox, string text);
+        private delegate void InsertTextDelegate(int num, GroupBox richTextBox, string text);
 
-        private void InsertText(RichTextBox richTextBox, string text)
+        private void UpdateRichTextBox(int num, GroupBox groupBox, string text)
         {
+            RichTextBox richTextBox = (RichTextBox)groupBox.Controls[0];
             // 如果当前线程不是UI线程，则通过Invoke委托给UI线程
             if (richTextBox.InvokeRequired)
             {
-                richTextBox.Invoke(new InsertTextDelegate(InsertText), richTextBox, text);
+                richTextBox.Invoke(new InsertTextDelegate(UpdateRichTextBox), num, groupBox, text);
             }
             else
-            {
-                // 在UI线程中直接操作
+            { 
                 richTextBox.AppendText(text + Environment.NewLine);
                 richTextBox.SelectionStart = richTextBox.TextLength;
                 richTextBox.ScrollToCaret();
+
+                //// 在UI线程中直接操作
+                //if (richTextBox.Text.Length > AppConfig.MaxTaskMsgLength)
+                //{
+                //    // 保存到日志文件
+                //    SaveLogToFile(num, richTextBox.Text);
+                //    // 清空文本框
+                //    richTextBox.Clear();
+                //}
             }
         }
 
@@ -51,42 +63,133 @@ namespace MagicalAPIWand
 
         private void button1_Click(object sender, EventArgs e)
         {
+            AddTask();
+        }
+
+        private void AddTask()
+        {
+
             AppConfig.TaskNum++;
             CreatTaskGroup(AppConfig.TaskNum);
         }
 
-        private async void button2_Click(object sender, EventArgs e)
+
+        public static Guid Id { get; set; }
+
+        public void Work(Action<int, List<object>> func)
         {
-            // 创建任务组
-            for (int i = 1; i <= AppConfig.TaskNum; i++)
+            if (AppConfig.TaskNum < 1)
             {
-                CreatTaskGroup(i);
+                MessageBox.Show("Task Num < 1");
+                return;
             }
+            Id = Guid.NewGuid();
+            // 将数据分割成多个子列表
+            var chunks = ImportData.SplitDataIntoChunks(ImportData.Data, AppConfig.TaskNum);
 
-            // 动态创建任务列表
+            // 创建任务列表
             List<Task> tasks = new List<Task>();
-            for (int i = 1; i <= AppConfig.TaskNum; i++)
+
+            // 为每个子列表创建一个任务
+            for (int i = 0; i < chunks.Count; i++)
             {
-                tasks.Add(ExecuteTaskAsync(i));
+                int taskIndex = i; // 防止闭包问题
+                tasks.Add(Task.Run(() =>
+                {
+                    // 处理子列表中的数据
+                    func(taskIndex + 1, chunks[taskIndex]);
+                }));
             }
 
-            // 启动所有任务
-            await Task.WhenAll(tasks);
+            // 等待所有任务完成
+            Task.WaitAll([.. tasks]);
         }
 
-        private async Task ExecuteTaskAsync(int taskNumber)
+        private void button2_Click(object sender, EventArgs e)
         {
-            // 获取对应的RichTextBox
+            Work(ExecuteTaskAsync);
+        }
+
+        private void ExecuteTaskAsync(int taskNumber, List<object> data)
+        {
+            // 获取对应的GroupBox
             GroupBox groupBox = (GroupBox)this.flowLayoutPanel_TaskContainer.Controls[taskNumber - 1];
+
+            // 模拟任务执行（在后台线程中运行）
+            foreach (var item in data)
+            {
+                // 模拟任务执行时间
+                Task.Delay(1000).Wait(); // 使用Task.Delay而不是Thread.Sleep
+
+                // 更新UI（切换到UI线程）
+                if (groupBox.InvokeRequired)
+                {
+                    groupBox.Invoke(new Action(() =>
+                    {
+                        UpdateRichTextBox(taskNumber, groupBox, JsonConvert.SerializeObject(data));
+                    }));
+                }
+                else
+                {
+                    UpdateRichTextBox(taskNumber, groupBox, JsonConvert.SerializeObject(data));
+                }
+            }
+
+            // 任务完成（切换到UI线程）
+            if (groupBox.InvokeRequired)
+            {
+                groupBox.Invoke(new Action(() =>
+                {
+                    UpdateRichTextBox(taskNumber, groupBox, null);
+                }));
+            }
+            else
+            {
+                UpdateRichTextBox(taskNumber, groupBox, null);
+            }
+        } 
+
+        private void ExecuteTaskOnUIThread(int taskNumber, List<object> data, GroupBox groupBox)
+        {
+            // 获取RichTextBox
             RichTextBox richTextBox = (RichTextBox)groupBox.Controls[0];
 
             // 模拟任务执行
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < data.Count; i++)
             {
-                await Task.Delay(1000); // 模拟任务执行时间
-                InsertText(richTextBox, $"Task {taskNumber} - 消费 {i + 1}");
+                richTextBox.AppendText($"Task {taskNumber} - 消费 {JsonConvert.SerializeObject(data[i])}{Environment.NewLine}");
+                richTextBox.SelectionStart = richTextBox.TextLength;
+                richTextBox.ScrollToCaret();
+
+                // 模拟任务执行时间
+                Thread.Sleep(1000); // 注意：这里使用Thread.Sleep而不是Task.Delay
             }
-            InsertText(richTextBox, $"Task {taskNumber} 消费完成");
+
+            richTextBox.AppendText($"Task {taskNumber} 消费完成{Environment.NewLine}");
+        }
+
+        private void SaveLogToFile(int num,string logContent)
+        {
+            // 获取应用程序目录下的Logs文件夹路径
+            string logsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs");
+            // 如果Logs文件夹不存在，则创建
+            if (!Directory.Exists(logsFolder))
+            {
+                Directory.CreateDirectory(logsFolder);
+            }
+
+            string idFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs/" + Id);
+            // 如果Logs文件夹不存在，则创建
+            if (!Directory.Exists(idFolder))
+            {
+                Directory.CreateDirectory(idFolder);
+            }
+
+            // 定义日志文件路径
+            string logFilePath = Path.Combine(idFolder, $"task_{num}.log");
+
+            // 将日志内容写入文件
+            File.AppendAllText(logFilePath, logContent);
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -94,6 +197,11 @@ namespace MagicalAPIWand
             FormData form = new FormData();
             form.ShowDialog();
             this.label_data_count.Text = $"Data ({ImportData.Data.Count})";
+        }
+
+        private void FormMain_Load(object sender, EventArgs e)
+        { 
+            AddTask();
         }
     }
 }
