@@ -3,7 +3,7 @@
 
 Windows desktop application for batch calling specified API interfaces
 
-<img width="825" alt="1740904274870" src="https://github.com/user-attachments/assets/13000822-632e-4074-ae83-99754d2a0b01" />
+![image](https://github.com/user-attachments/assets/dfa62b18-9def-4c9f-8155-9b92e5ada226)
 
 必要的运行环境
 - windows7-windows11
