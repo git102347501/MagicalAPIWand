@@ -1,17 +1,13 @@
 namespace MagicalAPIWand
 {
     public partial class FormMain : Form
-    {
+    { 
+
         public FormMain()
         {
             InitializeComponent();
-        }
+        } 
 
-        private void settingToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
-         
         private delegate void InsertTextDelegate(RichTextBox richTextBox, string text);
 
         private void InsertText(RichTextBox richTextBox, string text)
@@ -55,12 +51,12 @@ namespace MagicalAPIWand
 
         private void button1_Click(object sender, EventArgs e)
         {
-            AppConfig.TaskNum++; 
+            AppConfig.TaskNum++;
             CreatTaskGroup(AppConfig.TaskNum);
         }
 
         private async void button2_Click(object sender, EventArgs e)
-        { 
+        {
             // 创建任务组
             for (int i = 1; i <= AppConfig.TaskNum; i++)
             {
@@ -91,6 +87,13 @@ namespace MagicalAPIWand
                 InsertText(richTextBox, $"Task {taskNumber} - 消费 {i + 1}");
             }
             InsertText(richTextBox, $"Task {taskNumber} 消费完成");
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            FormData form = new FormData();
+            form.ShowDialog();
+            this.label_data_count.Text = $"Data ({ImportData.Data.Count})";
         }
     }
 }

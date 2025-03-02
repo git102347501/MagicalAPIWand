@@ -35,6 +35,8 @@
             ownerToolStripMenuItem = new ToolStripMenuItem();
             splitContainer1 = new SplitContainer();
             groupBox1 = new GroupBox();
+            label_data_count = new Label();
+            button3 = new Button();
             button2 = new Button();
             richTextBox1 = new RichTextBox();
             radioButton2 = new RadioButton();
@@ -44,6 +46,7 @@
             textBox1 = new TextBox();
             label1 = new Label();
             flowLayoutPanel_TaskContainer = new FlowLayoutPanel();
+            label3 = new Label();
             menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
             splitContainer1.Panel1.SuspendLayout();
@@ -68,7 +71,6 @@
             settingToolStripMenuItem.Name = "settingToolStripMenuItem";
             settingToolStripMenuItem.Size = new Size(88, 28);
             settingToolStripMenuItem.Text = "Setting";
-            settingToolStripMenuItem.Click += settingToolStripMenuItem_Click;
             // 
             // configToolStripMenuItem
             // 
@@ -104,11 +106,14 @@
             // 
             splitContainer1.Panel2.Controls.Add(flowLayoutPanel_TaskContainer);
             splitContainer1.Size = new Size(1686, 938);
-            splitContainer1.SplitterDistance = 243;
+            splitContainer1.SplitterDistance = 270;
             splitContainer1.TabIndex = 3;
             // 
             // groupBox1
             // 
+            groupBox1.Controls.Add(label3);
+            groupBox1.Controls.Add(label_data_count);
+            groupBox1.Controls.Add(button3);
             groupBox1.Controls.Add(button2);
             groupBox1.Controls.Add(richTextBox1);
             groupBox1.Controls.Add(radioButton2);
@@ -120,26 +125,45 @@
             groupBox1.Dock = DockStyle.Fill;
             groupBox1.Location = new Point(0, 0);
             groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(1686, 243);
+            groupBox1.Size = new Size(1686, 270);
             groupBox1.TabIndex = 1;
             groupBox1.TabStop = false;
             groupBox1.Text = "Api Info";
             // 
+            // label_data_count
+            // 
+            label_data_count.AutoSize = true;
+            label_data_count.Location = new Point(52, 175);
+            label_data_count.Name = "label_data_count";
+            label_data_count.Size = new Size(79, 24);
+            label_data_count.TabIndex = 11;
+            label_data_count.Text = "Data (0)";
+            // 
+            // button3
+            // 
+            button3.Location = new Point(41, 136);
+            button3.Name = "button3";
+            button3.Size = new Size(112, 34);
+            button3.TabIndex = 10;
+            button3.Text = "Import";
+            button3.UseVisualStyleBackColor = true;
+            button3.Click += button3_Click;
+            // 
             // button2
             // 
-            button2.Location = new Point(1210, 42);
+            button2.Location = new Point(1060, 39);
             button2.Name = "button2";
             button2.Size = new Size(112, 34);
             button2.TabIndex = 9;
-            button2.Text = "Test";
+            button2.Text = "Start";
             button2.UseVisualStyleBackColor = true;
             button2.Click += button2_Click;
             // 
             // richTextBox1
             // 
-            richTextBox1.Location = new Point(161, 96);
+            richTextBox1.Location = new Point(159, 79);
             richTextBox1.Name = "richTextBox1";
-            richTextBox1.Size = new Size(1415, 122);
+            richTextBox1.Size = new Size(1417, 139);
             richTextBox1.TabIndex = 8;
             richTextBox1.Text = "";
             // 
@@ -206,8 +230,17 @@
             flowLayoutPanel_TaskContainer.Dock = DockStyle.Fill;
             flowLayoutPanel_TaskContainer.Location = new Point(0, 0);
             flowLayoutPanel_TaskContainer.Name = "flowLayoutPanel_TaskContainer";
-            flowLayoutPanel_TaskContainer.Size = new Size(1686, 691);
+            flowLayoutPanel_TaskContainer.Size = new Size(1686, 664);
             flowLayoutPanel_TaskContainer.TabIndex = 0;
+            // 
+            // label3
+            // 
+            label3.AutoSize = true;
+            label3.Location = new Point(161, 231);
+            label3.Name = "label3";
+            label3.Size = new Size(333, 24);
+            label3.TabIndex = 12;
+            label3.Text = "Desc: Use Import Data {{datacolumn}}";
             // 
             // FormMain
             // 
@@ -249,5 +282,8 @@
         private Label label1;
         private FlowLayoutPanel flowLayoutPanel_TaskContainer;
         private Button button2;
+        private Button button3;
+        private Label label_data_count;
+        private Label label3;
     }
 }
