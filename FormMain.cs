@@ -11,7 +11,7 @@ namespace MagicalAPIWand
             InitializeComponent();
         }
 
-        private delegate void InsertTextDelegate(int num, GroupBox richTextBox, string text);
+        private delegate void InsertTextDelegate(int num, RichTextBox richTextBox, string text);
 
         private void UpdateRichTextBox(int num, GroupBox groupBox, string text)
         {
@@ -19,10 +19,36 @@ namespace MagicalAPIWand
             // 如果当前线程不是UI线程，则通过Invoke委托给UI线程
             if (richTextBox.InvokeRequired)
             {
-                richTextBox.Invoke(new InsertTextDelegate(UpdateRichTextBox), num, groupBox, text);
+                richTextBox.Invoke(new InsertTextDelegate(UpdateRichTextBox), num, richTextBox, text);
             }
             else
             { 
+                richTextBox.AppendText(text + Environment.NewLine);
+                richTextBox.SelectionStart = richTextBox.TextLength;
+                richTextBox.ScrollToCaret();
+
+                // 在UI线程中直接操作
+                if (richTextBox.Text.Length > AppConfig.MaxTaskMsgLength)
+                {
+                    // 保存到日志文件
+                    SaveLogToFile(num, richTextBox.Text);
+                    // 清空文本框
+                    richTextBox.Clear();
+                }
+            }
+        }
+
+
+        private void UpdateRichTextBox(int num, RichTextBox groupBox, string text)
+        {
+            RichTextBox richTextBox = (RichTextBox)groupBox.Controls[0];
+            // 如果当前线程不是UI线程，则通过Invoke委托给UI线程
+            if (richTextBox.InvokeRequired)
+            {
+                richTextBox.Invoke(new InsertTextDelegate(UpdateRichTextBox), num, richTextBox, text);
+            }
+            else
+            {
                 richTextBox.AppendText(text + Environment.NewLine);
                 richTextBox.SelectionStart = richTextBox.TextLength;
                 richTextBox.ScrollToCaret();
@@ -76,7 +102,7 @@ namespace MagicalAPIWand
 
         public static Guid Id { get; set; }
 
-        public void Work(Action<int, List<object>> func)
+        public async Task WorkAsync(Action<int, List<object>> func)
         {
             if (AppConfig.TaskNum < 1)
             {
@@ -101,13 +127,13 @@ namespace MagicalAPIWand
                 }));
             }
 
-            // 等待所有任务完成
-            Task.WaitAll([.. tasks]);
+            // 等待所有任务完成 
+            await Task.WhenAll(tasks);
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private async void button2_Click(object sender, EventArgs e)
         {
-            Work(ExecuteTaskAsync);
+            await WorkAsync(ExecuteTaskAsync);
         }
 
         private void ExecuteTaskAsync(int taskNumber, List<object> data)
@@ -140,12 +166,12 @@ namespace MagicalAPIWand
             {
                 groupBox.Invoke(new Action(() =>
                 {
-                    UpdateRichTextBox(taskNumber, groupBox, null);
+                    UpdateRichTextBox(taskNumber, groupBox, "任务完成");
                 }));
             }
             else
             {
-                UpdateRichTextBox(taskNumber, groupBox, null);
+                UpdateRichTextBox(taskNumber, groupBox, "任务完成");
             }
         } 
 
