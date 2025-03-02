@@ -9,5 +9,7 @@ namespace MagicalAPIWand
     public static class AppConfig
     {
         public static int TaskNum { get; set; }
+
+        public static int MaxTaskMsgLength { get; set; } = 30;
     }
 }

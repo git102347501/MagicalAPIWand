@@ -140,7 +140,7 @@ namespace MagicalAPIWand
             {
                 RestoreDataGridViewFromImportData();
             }
-            this.label_Msg.Text = "";
+            this.label_Msg.Text = ""; 
         }
 
         private void RestoreDataGridViewFromImportData()
