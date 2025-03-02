@@ -47,6 +47,7 @@
             textBox1 = new TextBox();
             label1 = new Label();
             flowLayoutPanel_TaskContainer = new FlowLayoutPanel();
+            button4 = new Button();
             menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
             splitContainer1.Panel1.SuspendLayout();
@@ -111,6 +112,7 @@
             // 
             // groupBox1
             // 
+            groupBox1.Controls.Add(button4);
             groupBox1.Controls.Add(label3);
             groupBox1.Controls.Add(label_data_count);
             groupBox1.Controls.Add(button3);
@@ -200,7 +202,7 @@
             // 
             // button1
             // 
-            button1.Location = new Point(1582, 184);
+            button1.Location = new Point(1482, 224);
             button1.Name = "button1";
             button1.Size = new Size(94, 34);
             button1.TabIndex = 4;
@@ -241,6 +243,16 @@
             flowLayoutPanel_TaskContainer.Name = "flowLayoutPanel_TaskContainer";
             flowLayoutPanel_TaskContainer.Size = new Size(1686, 664);
             flowLayoutPanel_TaskContainer.TabIndex = 0;
+            // 
+            // button4
+            // 
+            button4.Location = new Point(1372, 224);
+            button4.Name = "button4";
+            button4.Size = new Size(104, 34);
+            button4.TabIndex = 5;
+            button4.Text = "OpenLog";
+            button4.UseVisualStyleBackColor = true;
+            button4.Click += button4_Click;
             // 
             // FormMain
             // 
@@ -286,5 +298,6 @@
         private Button button3;
         private Label label_data_count;
         private Label label3;
+        private Button button4;
     }
 }

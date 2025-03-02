@@ -1,11 +1,12 @@
 using Newtonsoft.Json;
+using System.Diagnostics;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace MagicalAPIWand
 {
     public partial class FormMain : Form
     {
-        
+
         public FormMain()
         {
             InitializeComponent();
@@ -22,7 +23,7 @@ namespace MagicalAPIWand
                 richTextBox.Invoke(new InsertTextDelegate(UpdateRichTextBox), num, richTextBox, text);
             }
             else
-            { 
+            {
                 richTextBox.AppendText(text + Environment.NewLine);
                 richTextBox.SelectionStart = richTextBox.TextLength;
                 richTextBox.ScrollToCaret();
@@ -72,8 +73,8 @@ namespace MagicalAPIWand
             }
             GroupBox containerGroupBox = new GroupBox();
             containerGroupBox.Text = "Task" + num;
-            containerGroupBox.Width = 200; // 设置宽度
-            containerGroupBox.Height = 150; // 设置高度
+            containerGroupBox.Width = AppConfig.TaskFormWidth; // 设置宽度
+            containerGroupBox.Height = AppConfig.TaskFormHeight; // 设置高度
 
             RichTextBox richTextBox = new RichTextBox();
             richTextBox.Text = "Task" + num;
@@ -100,7 +101,7 @@ namespace MagicalAPIWand
         }
 
 
-        public static Guid Id { get; set; }
+        public static string Id { get; set; }
 
         public async Task WorkAsync(Action<int, List<object>> func)
         {
@@ -109,7 +110,7 @@ namespace MagicalAPIWand
                 MessageBox.Show("Task Num < 1");
                 return;
             }
-            Id = Guid.NewGuid();
+            Id = DateTime.Now.ToString("yyyyMMddHHmmss");
             // 将数据分割成多个子列表
             var chunks = ImportData.SplitDataIntoChunks(ImportData.Data, AppConfig.TaskNum);
 
@@ -129,6 +130,7 @@ namespace MagicalAPIWand
 
             // 等待所有任务完成 
             await Task.WhenAll(tasks);
+            MessageBox.Show("Work Done");
         }
 
         private async void button2_Click(object sender, EventArgs e)
@@ -152,12 +154,12 @@ namespace MagicalAPIWand
                 {
                     groupBox.Invoke(new Action(() =>
                     {
-                        UpdateRichTextBox(taskNumber, groupBox, JsonConvert.SerializeObject(data));
+                        UpdateRichTextBox(taskNumber, groupBox, JsonConvert.SerializeObject(item));
                     }));
                 }
                 else
                 {
-                    UpdateRichTextBox(taskNumber, groupBox, JsonConvert.SerializeObject(data));
+                    UpdateRichTextBox(taskNumber, groupBox, JsonConvert.SerializeObject(item));
                 }
             }
 
@@ -173,7 +175,7 @@ namespace MagicalAPIWand
             {
                 UpdateRichTextBox(taskNumber, groupBox, "任务完成");
             }
-        } 
+        }
 
         private void ExecuteTaskOnUIThread(int taskNumber, List<object> data, GroupBox groupBox)
         {
@@ -194,7 +196,7 @@ namespace MagicalAPIWand
             richTextBox.AppendText($"Task {taskNumber} 消费完成{Environment.NewLine}");
         }
 
-        private void SaveLogToFile(int num,string logContent)
+        private void SaveLogToFile(int num, string logContent)
         {
             // 获取应用程序目录下的Logs文件夹路径
             string logsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs");
@@ -226,8 +228,37 @@ namespace MagicalAPIWand
         }
 
         private void FormMain_Load(object sender, EventArgs e)
-        { 
+        {
             AddTask();
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            // 获取应用程序的根目录
+            string appBaseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+
+            // 构造目标目录路径
+            string logsDirectory = Path.Combine(appBaseDirectory, "Logs");
+
+            // 如果目录不存在，则创建它
+            if (!Directory.Exists(logsDirectory))
+            {
+                Directory.CreateDirectory(logsDirectory);
+            }
+
+            // 使用 Process.Start 打开文件资源管理器到指定目录
+            try
+            {
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = "explorer.exe",
+                    Arguments = logsDirectory
+                });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Open Directory Error：{ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }

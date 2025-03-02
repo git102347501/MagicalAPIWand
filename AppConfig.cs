@@ -10,6 +10,10 @@ namespace MagicalAPIWand
     {
         public static int TaskNum { get; set; }
 
-        public static int MaxTaskMsgLength { get; set; } = 30;
+        public static int MaxTaskMsgLength { get; set; } = 300;
+
+        public static int TaskFormWidth { get; set; } = 400;
+
+        public static int TaskFormHeight { get; set; } = 400;
     }
 }
